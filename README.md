@@ -1,4 +1,4 @@
-# ClaudeClaw
+# ClaudeClaw OS
 
 ```
  ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
@@ -8,17 +8,26 @@
 ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
  ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝╚══════╝
 
- ██████╗██╗      █████╗ ██╗    ██╗
-██╔════╝██║     ██╔══██╗██║    ██║
-██║     ██║     ███████║██║ █╗ ██║
-██║     ██║     ██╔══██║██║███╗██║
-╚██████╗███████╗██║  ██║╚███╔███╔╝
- ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝
+ ██████╗██╗      █████╗ ██╗    ██╗     ██████╗ ███████╗
+██╔════╝██║     ██╔══██╗██║    ██║    ██╔═══██╗██╔════╝
+██║     ██║     ███████║██║ █╗ ██║    ██║   ██║███████╗
+██║     ██║     ██╔══██║██║███╗██║    ██║   ██║╚════██║
+╚██████╗███████╗██║  ██║╚███╔███╔╝    ╚██████╔╝███████║
+ ╚═════╝╚══════╝╚═╝  ╚═╝ ╚══╝╚══╝     ╚═════╝ ╚══════╝
 ```
 
 > Your Claude Code CLI, delivered to your phone via Telegram.
 
-ClaudeClaw is not a chatbot wrapper. It spawns the actual `claude` CLI on your Mac or Linux machine and pipes the result back to your Telegram chat. Everything that works in your terminal (your skills, your tools, your context) works from your phone.
+### Getting Started
+
+```bash
+git clone https://github.com/earlyaidopters/claudeclaw-os.git
+cd claudeclaw-os
+npm install
+npm run setup
+```
+
+ClaudeClaw OS is not a chatbot wrapper. It spawns the actual `claude` CLI on your Mac or Linux machine and pipes the result back to your Telegram chat. Everything that works in your terminal (your skills, your tools, your context) works from your phone.
 
 ---
 
