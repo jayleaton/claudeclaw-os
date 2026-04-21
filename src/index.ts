@@ -4,7 +4,7 @@ import path from 'path';
 import { loadAgentConfig, listAgentIds, resolveAgentDir, resolveAgentClaudeMd } from './agent-config.js';
 import { createBot } from './bot.js';
 import { checkPendingMigrations } from './migrations.js';
-import { ALLOWED_CHAT_ID, activeBotToken, STORE_DIR, PROJECT_ROOT, CLAUDECLAW_CONFIG, GOOGLE_API_KEY, setAgentOverrides, SECURITY_PIN_HASH, IDLE_LOCK_MINUTES, EMERGENCY_KILL_PHRASE, WARROOM_ENABLED, WARROOM_PORT } from './config.js';
+import { ALLOWED_CHAT_ID, activeBotToken, STORE_DIR, PROJECT_ROOT, CLAUDECLAW_CONFIG, GOOGLE_API_KEY, DEEPGRAM_API_KEY, CARTESIA_API_KEY, WARROOM_MODE, setAgentOverrides, SECURITY_PIN_HASH, IDLE_LOCK_MINUTES, EMERGENCY_KILL_PHRASE, WARROOM_ENABLED, WARROOM_PORT } from './config.js';
 import { startDashboard } from './dashboard.js';
 import { initDatabase, cleanupOldMissionTasks, insertAuditLog } from './db.js';
 import { initSecurity, setAuditCallback } from './security.js';
@@ -188,6 +188,7 @@ async function main(): Promise<void> {
       const { spawn } = await import('child_process');
       const venvPython = path.join(PROJECT_ROOT, 'warroom', '.venv', 'bin', 'python');
       const serverScript = path.join(PROJECT_ROOT, 'warroom', 'server.py');
+      const warroomMode = WARROOM_MODE === 'legacy' ? 'legacy' : 'live';
 
       // Write agent roster to /tmp so the Python server can discover agents dynamically
       try {
@@ -206,12 +207,25 @@ async function main(): Promise<void> {
         logger.warn({ err }, 'Could not write warroom agent roster');
       }
 
-      if (fs.existsSync(venvPython) && fs.existsSync(serverScript)) {
+      const missingLiveKey = warroomMode === 'live' && !GOOGLE_API_KEY;
+      const missingLegacyKeys = warroomMode === 'legacy' && (!DEEPGRAM_API_KEY || !CARTESIA_API_KEY);
+      if (missingLiveKey || missingLegacyKeys) {
+        const hint = warroomMode === 'legacy'
+          ? 'War Room is enabled but cannot start: WARROOM_MODE=legacy requires DEEPGRAM_API_KEY and CARTESIA_API_KEY in .env.'
+          : 'War Room is enabled but cannot start: WARROOM_MODE=live requires GOOGLE_API_KEY in .env.';
+        logger.error(hint);
+        if (ALLOWED_CHAT_ID) {
+          bot.api.sendMessage(ALLOWED_CHAT_ID, `${hint}\n\nFix the missing key(s) and restart the bot.`).catch(() => {});
+        }
+      } else if (fs.existsSync(venvPython) && fs.existsSync(serverScript)) {
         // Pre-flight: verify Python dependencies are actually installed
         const { spawnSync } = await import('child_process');
+        const depProbe = warroomMode === 'legacy'
+          ? 'import pipecat'
+          : 'import pipecat; import google.genai';
         const depCheck = spawnSync(
           venvPython,
-          ['-c', 'import pipecat; import google.genai'],
+          ['-c', depProbe],
           { stdio: 'pipe', timeout: 10000 },
         );
         if (depCheck.status !== 0) {
@@ -242,7 +256,7 @@ async function main(): Promise<void> {
           if (shuttingDown) return;
           const proc = spawn(venvPython, [serverScript], {
             cwd: PROJECT_ROOT,
-            env: { ...process.env, WARROOM_PORT: String(WARROOM_PORT) },
+            env: { ...process.env, WARROOM_PORT: String(WARROOM_PORT), WARROOM_MODE: warroomMode },
             stdio: ['ignore', 'pipe', 'pipe'],
           });
           currentProc = proc;

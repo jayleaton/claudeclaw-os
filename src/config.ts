@@ -19,6 +19,8 @@ const envConfig = readEnvFile([
   'CLAUDECLAW_CONFIG',
   'DB_ENCRYPTION_KEY',
   'GOOGLE_API_KEY',
+  'DEEPGRAM_API_KEY',
+  'CARTESIA_API_KEY',
   'AGENT_TIMEOUT_MS',
   'AGENT_MAX_TURNS',
   'SECURITY_PIN_HASH',
@@ -36,6 +38,7 @@ const envConfig = readEnvFile([
   'EXFILTRATION_GUARD_ENABLED',
   'PROTECTED_ENV_VARS',
   'WARROOM_ENABLED',
+  'WARROOM_MODE',
   'WARROOM_PORT',
   'STREAM_STRATEGY',
 ]);
@@ -168,6 +171,10 @@ export const DB_ENCRYPTION_KEY =
 // Google API key for Gemini (memory extraction + consolidation)
 export const GOOGLE_API_KEY =
   process.env.GOOGLE_API_KEY || envConfig.GOOGLE_API_KEY || '';
+export const DEEPGRAM_API_KEY =
+  process.env.DEEPGRAM_API_KEY || envConfig.DEEPGRAM_API_KEY || '';
+export const CARTESIA_API_KEY =
+  process.env.CARTESIA_API_KEY || envConfig.CARTESIA_API_KEY || '';
 
 // Streaming strategy for progressive Telegram updates.
 // 'global-throttle' (default): edits a placeholder message with streamed text,
@@ -253,8 +260,9 @@ export const PROTECTED_ENV_VARS = (
 // ── War Room (voice meeting via Pipecat WebSocket) ──────────────────
 export const WARROOM_ENABLED =
   (process.env.WARROOM_ENABLED || envConfig.WARROOM_ENABLED || 'false').toLowerCase() === 'true';
+export const WARROOM_MODE =
+  (process.env.WARROOM_MODE || envConfig.WARROOM_MODE || 'live').trim().toLowerCase();
 export const WARROOM_PORT = parseInt(
   process.env.WARROOM_PORT || envConfig.WARROOM_PORT || '7860',
   10,
 );
-
