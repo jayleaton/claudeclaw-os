@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 15
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        patterns:
+          - "*"
+    # whatsapp-web.js pulls Puppeteer and a large transitive tree; review those PRs on their own.

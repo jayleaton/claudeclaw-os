@@ -209,9 +209,13 @@ async function main(): Promise<void> {
       if (fs.existsSync(venvPython) && fs.existsSync(serverScript)) {
         // Pre-flight: verify Python dependencies are actually installed
         const { spawnSync } = await import('child_process');
-        const depCheck = spawnSync(venvPython, ['-c', 'import pipecat'], { stdio: 'pipe', timeout: 10000 });
+        const depCheck = spawnSync(
+          venvPython,
+          ['-c', 'import pipecat; import google.genai'],
+          { stdio: 'pipe', timeout: 10000 },
+        );
         if (depCheck.status !== 0) {
-          const msg = 'War Room Python dependencies not installed. Run:\n\n'
+          const msg = 'War Room Python dependencies are incomplete. Run:\n\n'
             + 'source warroom/.venv/bin/activate\n'
             + 'pip install -r warroom/requirements.txt\n\n'
             + 'Then restart the bot.';

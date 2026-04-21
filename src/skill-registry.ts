@@ -199,8 +199,15 @@ function scanDirectory(dir: string): void {
 export function initSkillRegistry(): void {
   skills.clear();
 
-  // Find project root by walking up from this file looking for CLAUDE.md
-  let projectRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+  // Find project root: tests set SKILL_REGISTRY_PROJECT_ROOT so scans use a temp tree
+  // instead of this repo's bundled skills/ (which would override ~/.claude/skills fixtures).
+  const envRoot = process.env.SKILL_REGISTRY_PROJECT_ROOT;
+  let projectRoot: string;
+  if (envRoot) {
+    projectRoot = path.resolve(envRoot);
+  } else {
+    projectRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+  }
   // Fallback: look for CLAUDE.md to confirm
   if (!fs.existsSync(path.join(projectRoot, 'CLAUDE.md'))) {
     // Already at a reasonable default, just continue

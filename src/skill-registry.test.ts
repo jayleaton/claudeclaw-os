@@ -45,10 +45,13 @@ beforeEach(() => {
 
   // Override HOME so global skills scan finds our temp dir
   process.env.HOME = tempGlobal;
+  // Do not scan the real repo skills/ (fixtures live under tempRoot / temp HOME only)
+  process.env.SKILL_REGISTRY_PROJECT_ROOT = tempRoot;
 });
 
 afterEach(() => {
   process.env.HOME = origHome;
+  delete process.env.SKILL_REGISTRY_PROJECT_ROOT;
   fs.rmSync(tempRoot, { recursive: true, force: true });
   fs.rmSync(tempGlobal, { recursive: true, force: true });
 });

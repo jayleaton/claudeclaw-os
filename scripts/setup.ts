@@ -385,7 +385,11 @@ async function main() {
       const venvPython = path.join(PROJECT_ROOT, 'warroom', '.venv', 'bin', 'python');
       const depsInstalled = (): boolean => {
         if (!fs.existsSync(venvPython)) return false;
-        const check = spawnSync(venvPython, ['-c', 'import pipecat'], { stdio: 'pipe', timeout: 10000 });
+        const check = spawnSync(
+          venvPython,
+          ['-c', 'import pipecat; import google.genai'],
+          { stdio: 'pipe', timeout: 10000 },
+        );
         return check.status === 0;
       };
 

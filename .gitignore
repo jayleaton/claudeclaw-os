@@ -59,3 +59,5 @@ warroom/avatars/photoreal-backup/
 CLAUDE.md
 agents/*/agent.yaml
 agents/*/CLAUDE.md
+.kaizen
+.nvmrc
